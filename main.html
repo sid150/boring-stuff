@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+        }
+
+        .rules {
+            color: white;
+            width: 300px;
+            text-align: left;
+            font-size: 18px;
+            transition: transform 0.3s ease;
+            transform: translateX(-320px); /* Start hidden */
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            background-color:black;
+            padding: 20px;
+            box-sizing: border-box;
+            margin-top:10%px;
+        }
+
+        .rules.open {
+            transform: translateX(0);
+        }
+
+        .toggle-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .grid-outer {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            width: 300px;
+            height: 300px;
+            position: relative;
+            animation: fade-in 1s ease-in;
+        }
+
+        @keyframes fade-in {``
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .grid-cell {
+            border: solid white 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .grid-cell:hover {
+            cursor: pointer;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            margin-top:0%;
+            display: block;
+        }
+
+        h2 {
+            color: white;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .reset-button:hover {
+            color: rgb(0, 0, 0);
+            background-color: white;
+            border-radius: 10px;
+        }
+
+        .player {
+            color: white;
+            margin-bottom: 30px;
+            display: block;
+            animation: fade-in 1s ease-in;
+        }
+
+        .line {
+            position: absolute;
+            background-color: green;
+            transform-origin: 0 0;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="toggle-button" onclick="toggleRules()">≡</button>
+    <div class="rules" id="rulesSidebar" onclick="toggleRules()">
+        <h2>Rules:</h2>
+        <ul>
+            <li>Player X starts the game.</li>
+            <li>Players take turns marking a square.</li>
+            <li>The first player to get 3 in a row wins.</li>
+            <li>If all squares are filled and no player has 3 in a row, the game is a draw.</li>
+            <li>Click "Reset" to start a new game.</li>
+        </ul>
+    </div>
+    <div class="title">
+        <h1>Tic Tac Toe</h1>
+    </div>
+    <div class="container">
+        <div class="game">
+            <h2><div class="player" id="player">Player X's turn</div></h2>
+            <div class="grid-outer" id="grid">
+                <div class="grid-cell" id="cell-0" data-value="0" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-1" data-value="1" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-2" data-value="2" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-3" data-value="3" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-4" data-value="4" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-5" data-value="5" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-6" data-value="6" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-7" data-value="7" onclick="selected(this)"></div>
+                <div class="grid-cell" id="cell-8" data-value="8" onclick="selected(this)"></div>
+            </div>
+            <button class="reset-button" onclick="resetGrid()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleRules() {
+            const rulesSidebar = document.getElementById('rulesSidebar');
+            rulesSidebar.classList.toggle('open');
+        }
+
+        var divItems = document.getElementsByClassName("grid-cell");
+        let hash = {};
+        let count = 1;
+        let gameOver = false;
+
+        function turn() {
+            document.getElementById('player').innerHTML = count % 2 == 1 ? "Player X's turn" : "Player O's turn";
+        }
+
+        function selected(item) {
+            if (item.textContent === '' && !gameOver) {
+                item.textContent = (count % 2) == 0 ? 'O' : 'X';
+                hash[item.dataset.value] = item.textContent;
+                item.style.color = "white";
+
+                if (checkWin()) {
+                    document.getElementById('player').innerHTML = `Player ${item.textContent} has won`;
+                    gameOver = true;
+                } else if (count === 9) {
+                    document.getElementById('player').innerHTML = "Game has been drawn";
+                    gameOver = true;
+                } else {
+                    count++;
+                    turn();
+                }
+            }
+        }
+
+        function resetGrid() {
+            for (let item of divItems) {
+                item.textContent = '';
+            }
+            hash = {};
+            count = 1;
+            gameOver = false;
+
+            const grid = document.getElementById("grid");
+            grid.style.animation = 'none';
+            grid.offsetHeight;
+            grid.style.animation = null;
+
+            const playerText = document.getElementById('player');
+            playerText.innerHTML = "Player X's turn";
+            playerText.style.animation = 'none';
+            playerText.offsetHeight; // trigger reflow
+            playerText.style.animation = null;
+
+            // Remove line element if it exists
+            const line = document.querySelector('.line');
+            if (line) {
+                line.remove();
+            }
+        }
+
+        function checkWin() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]  // diagonals
+            ];
+
+            for (const combo of winningCombinations) {
+                const [a, b, c] = combo;
+                if (hash[a] && hash[a] === hash[b] && hash[a] === hash[c]) {
+                    drawLine(a, b, c);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function drawLine(a, b, c) {
+            const cellA = document.getElementById(`cell-${a}`);
+            const cellB = document.getElementById(`cell-${b}`);
+            const cellC = document.getElementById(`cell-${c}`);
+            
+            const grid = document.getElementById('grid');
+            const line = document.createElement('div');
+            line.classList.add('line');
+
+            const startX = cellA.offsetLeft + cellA.offsetWidth / 2;
+            const startY = cellA.offsetTop + cellA.offsetHeight / 2;
+            const endX = cellC.offsetLeft + cellC.offsetWidth / 2;
+            const endY = cellC.offsetTop + cellC.offsetHeight / 2;
+
+            const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+            line.style.width = `${length}px`;
+            line.style.height = '4px';
+            line.style.left = `${startX}px`;
+            line.style.top = `${startY}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+
+            grid.appendChild(line);
+        }
+    </script>
+</body>
+
+</html>
